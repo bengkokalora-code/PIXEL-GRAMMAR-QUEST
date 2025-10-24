@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN: Pixel Grammar Quest</title>
+    <link rel="stylesheet" href="lmao.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* New styles for the Social Login buttons (Added here for easy copying, though these should ideally be in lmao.css) */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--cartridge-blue);
+        }
+        .btn-google {
+            background-color: #DB4437; /* Google Red */
+            box-shadow: 4px 4px 0 var(--high-vis-orange);
+        }
+        .btn-facebook {
+            background-color: #4267B2; /* Facebook Blue */
+            box-shadow: 4px 4px 0 var(--high-vis-orange);
+        }
+        .btn-google:hover, .btn-facebook:hover {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PIXEL GRAMMAR QUEST</h1>
+        <p class="tagline pixel-font">ENTER THE GAME WORLD</p>
+    </header>
+
+    <div class="container">
+        
+        <section id="login-interface" class="pixel-box">
+            <h2>ACCESS TERMINAL</h2>
+            <form id="login-form">
+                
+                <div class="input-group pixel-font">
+                    <label for="username">USER:</label>
+                    <input type="text" id="username" name="username" required placeholder="player / your email">
+                </div>
+                
+                <div class="input-group pixel-font">
+                    <label for="password">PASS:</label>
+                    <input type="password" id="password" name="password" required placeholder="start / your password">
+                </div>
+
+                <button type="submit" class="btn-cta pixel-font">[> LOGIN <]</button>
+            </form>
+
+            <div id="login-feedback" class="feedback pixel-font"></div>
+
+            <div class="social-login">
+                <p class="pixel-font" style="font-size: 0.7em; color: var(--text-primary); margin-bottom: 5px;">--- OR LOGIN WITH ---</p>
+                <button type="button" class="btn-cta btn-google pixel-font" onclick="simulateLogin('Google')">
+                    [> GOOGLE <]
+                </button>
+                <button type="button" class="btn-cta btn-facebook pixel-font" onclick="simulateLogin('Facebook')">
+                    [> FACEBOOK <]
+                </button>
+            </div>
+            </section>
+        
+        <p class="small-text pixel-font center-text">
+            Don't have an account? 
+            <a href="register.html" class="pixel-font" style="text-decoration: underline;">[> SIGN UP NOW <]</a>
+        </p>
+        
+        <p class="small-text pixel-font center-text">
+            Default Hint: Username: player, Password: start
+        </p>
+        
+    </div>
+
+    <footer>
+        <p class="pixel-font">
+            &copy; 2024 Pixel Grammar Quest 
+        </p>
+    </footer>
+
+    <script>
+        function authenticateAndRedirect(username) {
+            const feedbackDiv = document.getElementById('login-feedback');
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('username', username);
+            
+            feedbackDiv.className = 'feedback success';
+            feedbackDiv.textContent = 'ACCESS GRANTED. Redirecting...';
+            
+            setTimeout(() => {
+                window.location.href = 'ambot.html'; 
+            }, 1500);
+        }
+
+        // --- UPDATED FUNCTION FOR SOCIAL LOGIN ---
+        function simulateLogin(platform) {
+            const feedbackDiv = document.getElementById('login-feedback');
+            feedbackDiv.className = 'feedback';
+            feedbackDiv.textContent = `A simulated pop-up for ${platform} has appeared.`;
+
+            // Simulate a brief delay for the "popup" to appear and user to log in
+            setTimeout(() => {
+                feedbackDiv.className = 'feedback success';
+                feedbackDiv.textContent = `AUTHENTICATION SUCCESSFUL (via ${platform}). Redirecting...`;
+                
+                // Use a placeholder username for social logins
+                authenticateAndRedirect('social_' + platform.toLowerCase());
+            }, 1000); // 1-second delay for simulation
+        }
+        // ------------------------------------------
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+            const feedbackDiv = document.getElementById('login-feedback');
+            
+            // --- Simulated Authentication ---
+            const DEFAULT_USER = 'player';
+            const DEFAULT_PASS = 'start'; 
+
+            // Check for default user
+            if (usernameInput === DEFAULT_USER && passwordInput === DEFAULT_PASS) {
+                authenticateAndRedirect(usernameInput);
+                return;
+            }
+
+            // Check for locally registered user (email is used as username)
+            const registeredUser = localStorage.getItem('user:' + usernameInput);
+            
+            if (registeredUser && registeredUser === passwordInput) {
+                authenticateAndRedirect(usernameInput);
+                return;
+            }
+            
+            // If neither matches
+            localStorage.removeItem('isAuthenticated');
+            feedbackDiv.className = 'feedback';
+            feedbackDiv.textContent = 'ACCESS DENIED. Invalid Credentials.';
+            document.getElementById('password').value = '';
+        });
+    </script>
+</body>
+</html>
