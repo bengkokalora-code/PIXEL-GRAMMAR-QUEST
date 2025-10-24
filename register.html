@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REGISTER: Pixel Grammar Quest</title>
+    <link rel="stylesheet" href="lmao.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* Small styling update for the register form */
+        #register-interface {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            text-align: center;
+        }
+        /* New styles for the Social Login buttons (Added here for easy copying, though these should ideally be in lmao.css) */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--cartridge-blue);
+        }
+        .btn-google {
+            background-color: #DB4437; /* Google Red */
+            box-shadow: 4px 4px 0 var(--high-vis-orange);
+        }
+        .btn-facebook {
+            background-color: #4267B2; /* Facebook Blue */
+            box-shadow: 4px 4px 0 var(--high-vis-orange);
+        }
+        .btn-google:hover, .btn-facebook:hover {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PIXEL GRAMMAR QUEST</h1>
+        <p class="tagline pixel-font">CREATE NEW ACCOUNT</p>
+    </header>
+
+    <div class="container">
+        
+        <section id="register-interface" class="pixel-box">
+            <h2>REGISTER NEW USER</h2>
+            <form id="register-form">
+                
+                <div class="input-group pixel-font">
+                    <label for="reg-email">EMAIL:</label>
+                    <input type="email" id="reg-email" name="reg-email" required placeholder="your.name@example.com">
+                </div>
+                
+                <div class="input-group pixel-font">
+                    <label for="reg-password">PASS:</label>
+                    <input type="password" id="reg-password" name="reg-password" required placeholder="minimum 6 characters">
+                </div>
+                
+                <div class="input-group pixel-font">
+                    <label for="reg-confirm-password">CONFIRM:</label>
+                    <input type="password" id="reg-confirm-password" name="reg-confirm-password" required placeholder="re-enter password">
+                </div>
+
+                <button type="submit" class="btn-cta pixel-font">[> REGISTER ACCOUNT <]</button>
+            </form>
+
+            <div id="register-feedback" class="feedback pixel-font"></div>
+
+            <div class="social-login">
+                <p class="pixel-font" style="font-size: 0.7em; color: var(--text-primary); margin-bottom: 5px;">--- OR SIGN UP WITH ---</p>
+                <button type="button" class="btn-cta btn-google pixel-font" onclick="simulateSocialRegister('Google')">
+                    [> GOOGLE <]
+                </button>
+                <button type="button" class="btn-cta btn-facebook pixel-font" onclick="simulateSocialRegister('Facebook')">
+                    [> FACEBOOK <]
+                </button>
+            </div>
+            </section>
+
+        <p class="small-text pixel-font center-text">
+            Already have a hero? 
+            <a href="login.html" class="pixel-font" style="text-decoration: underline;">[> RETURN TO LOGIN <]</a>
+        </p>
+        
+    </div>
+
+    <footer>
+        <p class="pixel-font">
+            &copy; 2024 Pixel Grammar Quest 
+        </p>
+    </footer>
+
+    <script>
+        // --- UPDATED FUNCTION FOR SOCIAL REGISTER ---
+        function simulateSocialRegister(platform) {
+            const feedbackDiv = document.getElementById('register-feedback');
+            feedbackDiv.className = 'feedback';
+            feedbackDiv.textContent = `A simulated pop-up for ${platform} sign-up has appeared.`;
+            
+            // Simulate a brief delay for the "popup" to appear and user to log in
+            setTimeout(() => {
+                // Simulate account creation via social service and redirect to login
+                feedbackDiv.className = 'feedback success';
+                feedbackDiv.textContent = `SUCCESS! Account linked via ${platform}. Redirecting to login...`;
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html'; 
+                }, 1000); // 1-second delay before redirect
+            }, 1000); // 1-second delay for simulation
+        }
+        // ------------------------------------------
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('reg-email').value.trim();
+            const passwordInput = document.getElementById('reg-password').value;
+            const confirmPasswordInput = document.getElementById('reg-confirm-password').value;
+            const feedbackDiv = document.getElementById('register-feedback');
+            
+            feedbackDiv.className = 'feedback';
+
+            // --- Validation Checks ---
+            if (passwordInput.length < 6) {
+                feedbackDiv.textContent = 'PASSWORD ERROR: Password must be at least 6 characters.';
+                return;
+            }
+
+            if (passwordInput !== confirmPasswordInput) {
+                feedbackDiv.textContent = 'PASSWORD ERROR: Passwords do not match!';
+                return;
+            }
+            
+            // Check if the email is already registered (if local storage key exists)
+            if (localStorage.getItem('user:' + emailInput)) {
+                feedbackDiv.textContent = 'REGISTRATION FAILED: This email is already registered.';
+                return;
+            }
+
+            // --- Simulated Registration Success ---
+            localStorage.setItem('user:' + emailInput, passwordInput);
+
+            feedbackDiv.className = 'feedback success';
+            feedbackDiv.textContent = 'REGISTRATION SUCCESS! Redirecting to login...';
+            
+            setTimeout(() => {
+                window.location.href = 'login.html'; 
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
