@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Grammar Quest</title>
+    <link rel="stylesheet" href="lmao.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>PIXEL GRAMMAR QUEST</h1>
+        <p class="tagline pixel-font">Master the Verbs or Face the Void!</p>
+    </header>
+
+    <div class="container">
+        
+        <section id="character-selection" class="pixel-box">
+            <h2>CHOOSE YOUR HERO</h2>
+            <div class="character-select">
+                <div class="character-card pixel-font selected">
+                    <div class="char-img" id="char-1-sprite">WIZARD</div>
+                    <span>The Sorcerer</span>
+                </div>
+                <div class="character-card pixel-font">
+                    <div class="char-img" id="char-2-sprite">KNIGHT</div>
+                    <span>The Warrior</span>
+                    <span id="player-name-display" style="font-size: 0.7em; color: var(--cyber-teal);"></span>
+                </div>
+                <div class="character-card pixel-font">
+                    <div class="char-img" id="char-3-sprite">ROGUE</div>
+                    <span>The Shadow</span>
+                </div>
+            </div>
+        </section>
+        
+        <section id="training-ground" class="pixel-box">
+            
+            <div class="battle-top">
+                <div class="player-hp pixel-font">
+                    FOCUS: 
+                    <div id="hearts-container" class="hp-system">
+                        <div class="heart"></div>
+                        <div class="heart"></div>
+                        <div class="heart"></div>
+                    </div>
+                </div>
+                <div class="enemy-box">
+                    <span id="enemy-name" class="pixel-font">CHOOSE QUEST</span>
+                    <div id="enemy-sprite" class="enemy-sprite pixel-font">WAIT</div>
+                </div>
+            </div>
+
+            <div id="game-output" class="pixel-font">
+                Select a difficulty tier to preview the quest details.
+            </div>
+
+            <div id="sentence-display" class="pixel-font">
+                [Sentence Placeholder]
+            </div>
+            
+            <div id="level-menu">
+                </div>
+
+            <div id="action-menu">
+                </div>
+
+            <div id="feedback-div" class="feedback pixel-font">
+                </div>
+
+        </section>
+        
+    </div>
+
+    <footer>
+        <p class="pixel-font">
+            &copy; 2024 Pixel Grammar Quest | 
+            <a href="https://fonts.google.com/specimen/Press+Start+2P" target="_blank">Fonts: Press Start 2P & VT323</a>
+        </p>
+    </footer>
+
+    <script>
+        // === AUTHENTICATION CHECK ===
+        const loggedInUser = localStorage.getItem('username');
+        if (localStorage.getItem('isAuthenticated') !== 'true' || !loggedInUser) {
+            // Redirect to the login page if not authenticated
+            window.location.href = 'login.html'; 
+        } else {
+            // Display player name/email if logged in
+            document.getElementById('player-name-display').textContent = `[ ${loggedInUser.split('@')[0].toUpperCase()} ]`;
+        }
+        // ============================
+        
+        // --- Game Data ---
+        const challenges = {
+            easy: {
+                name: "Easy",
+                description: "Defeat the Basic Goblin by mastering Present Simple verbs.",
+                color: 'var(--level-easy)',
+                enemy: "Basic Goblin",
+                questions: [
+                    { pre: "She always ", post: " her keys.", options: ["lose", "loses"], correct: "loses" },
+                    { pre: "The sun ", post: " in the east.", options: ["rise", "rises"], correct: "rises" },
+                    { pre: "They ", post: " to the park every Sunday.", options: ["go", "goes"], correct: "go" },
+                    { pre: "He ", post: " three languages.", options: ["speak", "speaks"], correct: "speaks" },
+                    { pre: "We ", post: " our homework after dinner.", options: ["do", "does"], correct: "do" },
+                    { pre: "The cat ", post: " on the windowsill.", options: ["sleep", "sleeps"], correct: "sleeps" },
+                    { pre: "I ", post: " coffee every morning.", options: ["drink", "drinks"], correct: "drink" },
+                    { pre: "It ", post: " to rain frequently here.", options: ["begin", "begins"], correct: "begins" },
+                    { pre: "You ", post: " the rules well.", options: ["know", "knows"], correct: "know" },
+                    { pre: "My sister ", post: " a beautiful song.", options: ["sing", "sings"], correct: "sings" }
+                ]
+            },
+            medium: {
+                name: "Medium",
+                description: "Challenge the Great Wolf of Tenses using Past Simple verbs.",
+                color: 'var(--level-medium)',
+                enemy: "Great Wolf",
+                questions: [
+                    { pre: "Yesterday, I ", post: " to the store.", options: ["went", "go"], correct: "went" },
+                    { pre: "She ", post: " the entire book in one day.", options: ["read", "readed"], correct: "read" },
+                    { pre: "They ", post: " the old bridge last year.", options: ["built", "build"], correct: "built" },
+                    { pre: "He ", post: " the truth.", options: ["knew", "knowed"], correct: "knew" },
+                    { pre: "We ", post: " pizza for dinner.", options: ["eat", "ate"], correct: "ate" },
+                    { pre: "The phone ", post: " loudly.", options: ["ring", "rang"], correct: "rang" },
+                    { pre: "I ", post: " my jacket.", options: ["forgot", "forget"], correct: "forgot" },
+                    { pre: "It ", post: " all day yesterday.", options: ["rain", "rained"], correct: "rained" },
+                    { pre: "You ", post: " a great job on that project.", options: ["did", "done"], correct: "did" },
+                    { pre: "My parents ", post: " in 1998.", options: ["met", "meet"], correct: "met" }
+                ]
+            },
+            hard: {
+                name: "Hard",
+                description: "Confront the Grammar Dragon using Present Perfect Tense.",
+                color: 'var(--level-hard)',
+                enemy: "Grammar Dragon",
+                questions: [
+                    { pre: "I ", post: " never been there.", options: ["have", "has"], correct: "have" },
+                    { pre: "She ", post: " finished her report.", options: ["has", "have"], correct: "has" },
+                    { pre: "They have ", post: " to the new city.", options: ["move", "moved"], correct: "moved" },
+                    { pre: "The dog has ", post: " all the food.", options: ["eaten", "ate"], correct: "eaten" },
+                    { pre: "We have ", post: " that movie three times.", options: ["see", "seen"], correct: "seen" },
+                    { pre: "It has ", post: " snowing since dawn.", options: ["start", "started"], correct: "started" },
+                    { pre: "The company ", post: " achieved its goals.", options: ["has", "have"], correct: "has" },
+                    { pre: "You have ", post: " me enough times.", options: ["warned", "warn"], correct: "warned" },
+                    { pre: "He has ", post: " up all his savings.", options: ["use", "used"], correct: "used" },
+                    { pre: "Have they ", post: " their tickets?", options: ["book", "booked"], correct: "booked" }
+                ]
+            },
+            extreme: {
+                name: "Extreme",
+                description: "Face the ultimate Verb Lich! Focus on Future Perfect and Conditional.",
+                color: 'var(--level-extreme)',
+                enemy: "Verb Lich",
+                questions: [
+                    { pre: "By next year, I will ", post: " my degree.", options: ["have earned", "earned"], correct: "have earned" },
+                    { pre: "If I were you, I ", post: " that.", options: ["would do", "will do"], correct: "would do" },
+                    { pre: "She will have ", post: " the project by noon.", options: ["complete", "completed"], correct: "completed" },
+                    { pre: "If he had ", post: " the bus, he wouldn't be late.", options: ["catch", "caught"], correct: "caught" },
+                    { pre: "They ", post: " finished packing before the sun sets.", options: ["will have", "have"], correct: "will have" },
+                    { pre: "If it ", post: " today, we would stay inside.", options: ["rain", "rained"], correct: "rained" },
+                    { pre: "By the time you arrive, we will ", post: " eating.", options: ["have start", "have started"], correct: "have started" },
+                    { pre: "Would you ", post: " me if I asked?", options: ["help", "helped"], correct: "help" },
+                    { pre: "He wouldn't have known if you hadn't ", post: " him.", options: ["told", "tell"], correct: "told" },
+                    { pre: "The mechanic ", post: " fixed the car by Friday.", options: ["will have", "has"], correct: "will have" }
+                ]
+            }
+        };
+
+        // --- Game State Variables and Logic (using existing code) ---
+        let playerHP;
+        let gameActive = false;
+        let selectedLevel = null;
+        let currentChallengeIndex = 0;
+        let currentChallengeData = null;
+
+        const heartsContainer = document.getElementById('hearts-container');
+        const enemyName = document.getElementById('enemy-name');
+        const enemySprite = document.getElementById('enemy-sprite');
+        const gameOutput = document.getElementById('game-output');
+        const sentenceDisplay = document.getElementById('sentence-display');
+        const levelMenu = document.getElementById('level-menu');
+        const actionMenu = document.getElementById('action-menu');
+        const feedbackDiv = document.getElementById('feedback-div');
+        const charCards = document.querySelectorAll('.character-card');
+
+        charCards.forEach(card => {
+            card.addEventListener('click', () => {
+                charCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+        
+        function initGame() {
+            playerHP = 3;
+            gameActive = false;
+            selectedLevel = null;
+            currentChallengeIndex = 0;
+            currentChallengeData = null;
+            updateHearts();
+            renderLevelSelector();
+            
+            enemyName.textContent = 'CHOOSE QUEST';
+            enemySprite.textContent = 'WAIT';
+            enemySprite.classList.remove('defeated');
+            gameOutput.textContent = 'Select a difficulty tier to preview the quest details.';
+            sentenceDisplay.textContent = '[Sentence Placeholder]';
+            feedbackDiv.textContent = '';
+        }
+
+        function renderLevelSelector() {
+            levelMenu.innerHTML = '';
+            actionMenu.innerHTML = '';
+            
+            Object.keys(challenges).forEach(key => {
+                const levelData = challenges[key];
+                const card = document.createElement('div');
+                card.classList.add('level-card', 'pixel-font');
+                card.dataset.levelName = key;
+                card.innerHTML = `
+                    <span style="font-size: 1.2em;">${key.toUpperCase()}</span>
+                    <span class="level-desc" style="color: ${levelData.color};">${levelData.description}</span>
+                    <span style="font-size: 0.9em; color: ${levelData.color};">Focus Cost: 1 HP/Miss</span>
+                `;
+                card.addEventListener('click', () => selectLevel(key));
+                levelMenu.appendChild(card);
+            });
+        }
+        
+        function selectLevel(levelKey) {
+            document.querySelectorAll('.level-card').forEach(card => card.classList.remove('selected'));
+            const selectedCard = document.querySelector(`.level-card[data-level-name="${levelKey}"]`);
+            selectedCard.classList.add('selected');
+            
+            selectedLevel = levelKey;
+            currentChallengeData = challenges[levelKey];
+            
+            enemyName.textContent = currentChallengeData.enemy.toUpperCase();
+            enemySprite.textContent = currentChallengeData.enemy.split(' ')[0].toUpperCase();
+            enemySprite.classList.remove('defeated');
+            gameOutput.textContent = currentChallengeData.description;
+            sentenceDisplay.textContent = `Goal: Answer 10 questions. Current Level: 1/${currentChallengeData.questions.length}`;
+            feedbackDiv.textContent = 'Click "BEGIN QUEST" to start the challenge!';
+
+            actionMenu.innerHTML = '';
+            const playButton = document.createElement('button');
+            playButton.classList.add('btn-cta', 'pixel-font');
+            playButton.textContent = '[> BEGIN QUEST <]';
+            playButton.style.backgroundColor = currentChallengeData.color;
+            playButton.style.color = 'var(--void-black)';
+            playButton.style.boxShadow = `4px 4px 0 var(--cartridge-blue)`;
+            playButton.addEventListener('click', startGame);
+            actionMenu.appendChild(playButton);
+        }
+
+        function startGame() {
+            if (!selectedLevel) return;
+            levelMenu.innerHTML = '';
+            playerHP = 3;
+            currentChallengeIndex = 0;
+            gameActive = true;
+            updateHearts();
+            renderChallenge();
+        }
+
+        function updateHearts() {
+            const hearts = heartsContainer.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                if (index < playerHP) {
+                    heart.classList.remove('lost');
+                } else {
+                    heart.classList.add('lost');
+                }
+            });
+        }
+
+        function loseHP() {
+            if (!gameActive) return;
+            playerHP--;
+            updateHearts();
+            if (playerHP <= 0) {
+                endGame(false);
+            }
+        }
+
+        function renderChallenge() {
+            if (currentChallengeIndex >= currentChallengeData.questions.length) {
+                endGame(true);
+                return;
+            }
+
+            const question = currentChallengeData.questions[currentChallengeIndex];
+            gameOutput.textContent = `QUESTION ${currentChallengeIndex + 1}/${currentChallengeData.questions.length}: Choose the correct word.`;
+            sentenceDisplay.innerHTML = question.pre + 
+                                        `<span class="verb-placeholder">________</span>` + 
+                                        question.post;
+            
+            actionMenu.innerHTML = '';
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('action-btn');
+                button.textContent = `[> ${option.toUpperCase()} <]`;
+                button.dataset.choice = option;
+                button.addEventListener('click', handleChoice);
+                actionMenu.appendChild(button);
+            });
+            feedbackDiv.textContent = '';
+        }
+
+        function handleChoice(event) {
+            if (!gameActive) return;
+            const selectedVerb = event.target.dataset.choice;
+            const question = currentChallengeData.questions[currentChallengeIndex];
+            
+            actionMenu.querySelectorAll('.action-btn').forEach(btn => btn.disabled = true);
+            
+            sentenceDisplay.innerHTML = question.pre + 
+                                         `<span style="color: ${selectedVerb === question.correct ? 'var(--cyber-teal)' : 'var(--hp-red)'};">${selectedVerb}</span>` + 
+                                         question.post;
+
+            if (selectedVerb === question.correct) {
+                feedbackDiv.className = 'feedback success';
+                feedbackDiv.textContent = `CRITICAL HIT! "${selectedVerb.toUpperCase()}" is correct!`;
+                
+                setTimeout(() => {
+                    currentChallengeIndex++;
+                    renderChallenge();
+                }, 1500);
+            } else {
+                feedbackDiv.className = 'feedback';
+                feedbackDiv.textContent = `MISS! "${selectedVerb.toUpperCase()}" is incorrect! You lose 1 FOCUS.`;
+                loseHP();
+                
+                setTimeout(() => {
+                    if (playerHP > 0) {
+                        actionMenu.querySelectorAll('.action-btn').forEach(btn => btn.disabled = false);
+                        feedbackDiv.textContent = '';
+                        renderChallenge();
+                    }
+                }, 2000);
+            }
+        }
+
+        function endGame(won) {
+            gameActive = false;
+            actionMenu.innerHTML = '';
+            
+            if (won) {
+                gameOutput.innerHTML = '<span style="color: var(--cyber-teal); font-size: 1.5em;">QUEST VICTORIOUS!</span>';
+                feedbackDiv.textContent = `You cleared the ${currentChallengeData.name} tier! Your Grammar XP is maxed!`;
+            } else {
+                gameOutput.innerHTML = '<span style="color: var(--hp-red); font-size: 1.5em;">QUEST FAILED!</span>';
+                feedbackDiv.textContent = 'You ran out of FOCUS. Training Failed.';
+                enemySprite.classList.add('defeated');
+            }
+            
+            feedbackDiv.className = 'feedback success'; 
+            
+            const returnButton = document.createElement('button');
+            returnButton.classList.add('btn-cta', 'pixel-font');
+            returnButton.textContent = '[> RETURN TO QUEST SELECT <]';
+            returnButton.style.backgroundColor = 'var(--cyber-teal)';
+            returnButton.style.color = 'var(--void-black)';
+            returnButton.style.boxShadow = `4px 4px 0 var(--cartridge-blue)`;
+            returnButton.addEventListener('click', initGame);
+            actionMenu.appendChild(returnButton);
+        }
+
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
